@@ -88,7 +88,7 @@ window.getGPS = function(){
 async function loadPosts(){
  const list=document.getElementById('postsList');
  try{
-   const q=query(collection(db,"posts"), orderBy("createdAt","desc"));
+   const q=query(collection(db,"houses"), orderBy("createdAt","desc"));
    const snap=await getDocs(q);
    if(snap.empty){ list.innerHTML="No posts yet. Be first to post!"; return; }
    list.innerHTML="";
@@ -117,7 +117,7 @@ document.getElementById('postBtn').onclick = async ()=>{
  status.style.color="orange";
  status.innerText="⏳ Posting to Everyone...";
  try{
-   await addDoc(collection(db,"posts"), {title,desc,area,price,maplink,upi,phone,time:new Date().toLocaleString(), createdAt: serverTimestamp()});
+   await addDoc(collection(db,"houses"), {title,desc,area,price,maplink,upi,phone,time:new Date().toLocaleString(), createdAt: serverTimestamp()});
    status.style.color="green";
    status.innerText="✅ POSTED! Everyone can see now!";
    alert("✅ SUCCESS! Now EVERYONE can see your post!");
