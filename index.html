@@ -12,474 +12,153 @@ body{background:#f5f7fb;color:#222}
 header{background:#1a73e8;color:#fff;padding:16px;text-align:center;position:sticky;top:0;z-index:10}
 .container{max-width:900px;margin:0 auto;padding:16px}
 .card{background:#fff;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-.btn{background:#1a73e8;color:#fff;border:0;padding:12px 18px;border-radius:8px;width:100%;font-size:15px;font-weight:bold;cursor:pointer;margin-top:8px}
+.btn{background:#1a73e8;color:#fff;border:0;padding:12px 18px;border-radius:8px;width:100%;font-size:15px;font-weight:bold;cursor:pointer}
 .btn2{background:#e8f0fe;color:#1a73e8}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media(max-width:600px){.grid{grid-template-columns:1fr}}
 input,select,textarea{width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin:6px 0}
-.qr-box{text-align:center;border:1px dashed #1a73e8;padding:12px;border-radius:8px;margin:10px 0}
-.preview img,.preview video{width:80px;height:80px;object-fit:cover;border-radius:8px;margin:4px}
+label{font-weight:bold;font-size:13px}
+#postsList{margin-top:16px}
+.postItem{border:1px solid #eee;padding:12px;border-radius:8px;margin-bottom:10px;background:#fafbff}
 </style>
 </head>
 <body>
 <header>
-<h1>NEP LINK</h1>
-<p>North East People Platform - Delhi NCR</p>
+<h2>NEP Link</h2>
+<p>North East People Platform</p>
 </header>
-<div class="container">
 
+<div class="container">
 <div class="card">
-<h2>Find Rooms, Shops & Food</h2>
-<p style="margin-top:6px">Platform for North-East people in Delhi NCR. Delivery charge will be discussed at the time of buying and selling.</p>
-</div>
+<h3>🏠 Post Your Room / Product</h3>
+
+<label>Title (e.g. 1RK)</label>
+<input id="title" placeholder="e.g. 1RK Room for Rent">
+
+<label>Description (e.g. Govt meter)</label>
+<textarea id="desc" placeholder="e.g. Govt meter, water 24x7, 1st floor"></textarea>
 
 <div class="grid">
-<div class="card">
-<h3>🏠 Room Rentals</h3>
-<select>
-<option>Select Location</option><option>Munirka</option><option>Humayunpur</option><option>Marani Bagh</option><option>Ashram</option><option>Kotla</option><option>Molarband</option><option>Gurugram</option>
-</select>
-<input id="roomLoc" placeholder="Exact address / Pin Location">
-<button class="btn btn2" onclick="getLocation('roomLoc')">📍 Use My Current Location</button>
-<button class="btn">Search Rooms</button>
+<div>
+<label>Area / Location (e.g. Marani Bagh)</label>
+<input id="area" placeholder="e.g. Marani Bagh">
+</div>
+<div>
+<label>Rent / Price</label>
+<input id="price" placeholder="e.g. 6000/month">
+</div>
+</div>
+
+<label>Google Maps Link</label>
+<input id="maplink" placeholder="Paste Google Maps link">
+
+<button class="btn btn2" type="button" onclick="getGPS()">📍 Get GPS Pin</button>
+<p id="gpsText" style="font-size:12px;color:green;margin:6px 0"></p>
+
+<label>Upload Photos & Videos</label>
+<input type="file" id="photos" multiple accept="image/*,video/*">
+
+<div style="margin-top:12px;border-top:1px dashed #ddd;padding-top:12px">
+<h4>Payment Details - Seller</h4>
+<label>UPI ID (Required)</label>
+<input id="upi" placeholder="e.g. yourname@okaxis">
+<label>Phone Number</label>
+<input id="phone" placeholder="e.g. 9876543210">
+</div>
+
+<br>
+<button class="btn" id="postBtn" type="button" onclick="handlePostNow()">Post Now</button>
+<p id="status" style="text-align:center;margin-top:10px;color:green;font-weight:bold"></p>
 </div>
 
 <div class="card">
-<h3>🛒 North East Shops</h3>
-<select><option>All Items</option><option>Axone</option><option>Smoked Meat</option><option>Dry Fish</option></select>
-<input id="shopLoc" placeholder="Shop Location">
-<button class="btn btn2" onclick="getLocation('shopLoc')">📍 Pin Shop Location</button>
-<button class="btn">Browse Shops</button>
-</div>
-</div>
-
-<div class="card">
-<h3>📦 Post Your Product / Room (Upload Photos & Videos)</h3>
-<input id="title" placeholder="Title e.g. 1BHK available Marani Bagh">
-<textarea placeholder="Description, price..."></textarea>
-<select><option>Marani Bagh</option><option>Ashram</option><option>Kotla</option><option>Munirka</option><option>Gurugram</option><option>Other</option></select>
-<input id="pinInput" placeholder="Paste Google Maps Link or Pin Location">
-<button class="btn btn2" onclick="getLocation('pinInput')">📍 Get GPS Pin</button>
-
-<label style="font-size:14px;font-weight:bold;margin-top:10px;display:block">Upload Photos & Videos:</label>
-<input type="file" id="mediaUpload" multiple accept="image/*,video/*" onchange="previewMedia(event)">
-<div class="preview" id="preview"></div>
-
-<button class="btn">Post Now</button>
-</div>
-
-<div class="card">
-<h3>💳 Payment Details - Seller</h3>
-<input id="upiId" placeholder="Enter UPI ID e.g. neplink@okaxis" oninput="genQR()">
-<input placeholder="Account holder name">
-<div class="qr-box">
-<p style="font-size:13px">QR Code (Auto generates)</p>
-<img id="qrImg" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=neplink" alt="QR will appear here">
-<p id="upiText" style="font-size:12px;margin-top:6px;color:#666">Enter UPI to generate QR</p>
-</div>
-<p style="font-size:12px;color:#666">Buyer will scan QR to pay. Delivery charge discussed at time of buying/selling.</p>
-</div>
-
-<div class="card">
-<h3>📦 Quick Order</h3>
-<textarea placeholder="What do you want to order?"></textarea>
-<input id="orderLoc" placeholder="Delivery Location">
-<button class="btn btn2" onclick="getLocation('orderLoc')">📍 Pin Delivery Location</button>
-<input placeholder="Phone number">
-<button class="btn">Place Order on WhatsApp</button>
+<h3>📋 Your Recent Posts (Saved in this phone)</h3>
+<div id="postsList">No posts yet.</div>
+<button class="btn btn2" onclick="clearPosts()">Clear All Posts</button>
 </div>
 
 </div>
+
 <script>
-function getLocation(inputId){
- if(navigator.geolocation){
-  navigator.geolocation.getCurrentPosition(pos=>{
-   const link=`https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
-   document.getElementById(inputId).value=link;
-   alert("Location pinned: "+link);
-  });
- } else { alert("Geolocation not supported"); }
+// Register Service Worker for PWA
+if('serviceWorker' in navigator){
+ navigator.serviceWorker.register('sw.js');
 }
-function genQR(){
- const upi=document.getElementById('upiId').value;
- if(upi){
-  document.getElementById('qrImg').src=`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent('upi://pay?pa='+upi)}`;
-  document.getElementById('upiText').innerText=upi;
- }
-}
-function previewMedia(e){
- const preview=document.getElementById('preview');
- preview.innerHTML='';
- [...e.target.files].forEach(file=>{
-  const url=URL.createObjectURL(file);
-  if(file.type.startsWith('image')) preview.innerHTML+=`<img src="${url}">`;
-  else preview.innerHTML+=`<video src="${url}" controls></video>`;
+
+// GPS Function
+function getGPS(){
+ const t = document.getElementById('gpsText');
+ t.innerText = "Getting location...";
+ if(!navigator.geolocation){ t.innerText="GPS not supported"; return; }
+ navigator.geolocation.getCurrentPosition(pos=>{
+   const lat = pos.coords.latitude;
+   const lon = pos.coords.longitude;
+   document.getElementById('maplink').value = `https://maps.google.com/?q=${lat},${lon}`;
+   t.innerText = `✅ GPS Got: ${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+ }, err=>{
+   t.innerText = "❌ GPS Failed: " + err.message;
  });
 }
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js')}
-</script>
-</body>
-</html><!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>NEP Link - North East People Platform</title>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#1a73e8">
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
-body{background:#f5f7fb;color:#222}
-header{background:#1a73e8;color:#fff;padding:16px;text-align:center;position:sticky;top:0;z-index:10}
-.container{max-width:900px;margin:0 auto;padding:16px}
-.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-.btn{background:#1a73e8;color:#fff;border:0;padding:12px 18px;border-radius:8px;width:100%;font-size:15px;font-weight:bold;cursor:pointer;margin-top:8px}
-.btn2{background:#e8f0fe;color:#1a73e8}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:600px){.grid{grid-template-columns:1fr}}
-input,select,textarea{width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin:6px 0}
-.qr-box{text-align:center;border:1px dashed #1a73e8;padding:12px;border-radius:8px;margin:10px 0}
-.preview img,.preview video{width:80px;height:80px;object-fit:cover;border-radius:8px;margin:4px}
-</style>
-</head>
-<body>
-<header>
-<h1>NEP LINK</h1>
-<p>North East People Platform - Delhi NCR</p>
-</header>
-<div class="container">
 
-<div class="card">
-<h2>Find Rooms, Shops & Food</h2>
-<p style="margin-top:6px">Platform for North-East people in Delhi NCR. Delivery charge will be discussed at the time of buying and selling.</p>
-</div>
+// MAIN POST NOW - FIXED
+function handlePostNow(){
+ const title = document.getElementById('title').value.trim();
+ const desc = document.getElementById('desc').value.trim();
+ const area = document.getElementById('area').value.trim();
+ const price = document.getElementById('price').value.trim();
+ const maplink = document.getElementById('maplink').value.trim();
+ const upi = document.getElementById('upi').value.trim();
+ const phone = document.getElementById('phone').value.trim();
 
-<div class="grid">
-<div class="card">
-<h3>🏠 Room Rentals</h3>
-<select>
-<option>Select Location</option><option>Munirka</option><option>Humayunpur</option><option>Marani Bagh</option><option>Ashram</option><option>Kotla</option><option>Molarband</option><option>Gurugram</option>
-</select>
-<input id="roomLoc" placeholder="Exact address / Pin Location">
-<button class="btn btn2" onclick="getLocation('roomLoc')">📍 Use My Current Location</button>
-<button class="btn">Search Rooms</button>
-</div>
+ if(!title){ alert("Please enter Title (e.g. 1RK)"); return; }
+ if(!area){ alert("Please enter Area"); return; }
+ if(!upi){ alert("Please enter UPI ID - Required for Payment"); return; }
 
-<div class="card">
-<h3>🛒 North East Shops</h3>
-<select><option>All Items</option><option>Axone</option><option>Smoked Meat</option><option>Dry Fish</option></select>
-<input id="shopLoc" placeholder="Shop Location">
-<button class="btn btn2" onclick="getLocation('shopLoc')">📍 Pin Shop Location</button>
-<button class="btn">Browse Shops</button>
-</div>
-</div>
+ document.getElementById('status').innerText = "⏳ Posting...";
 
-<div class="card">
-<h3>📦 Post Your Product / Room (Upload Photos & Videos)</h3>
-<input id="title" placeholder="Title e.g. 1BHK available Marani Bagh">
-<textarea placeholder="Description, price..."></textarea>
-<select><option>Marani Bagh</option><option>Ashram</option><option>Kotla</option><option>Munirka</option><option>Gurugram</option><option>Other</option></select>
-<input id="pinInput" placeholder="Paste Google Maps Link or Pin Location">
-<button class="btn btn2" onclick="getLocation('pinInput')">📍 Get GPS Pin</button>
+ const newPost = {
+   id: Date.now(),
+   title, desc, area, price, maplink, upi, phone,
+   time: new Date().toLocaleString()
+ };
 
-<label style="font-size:14px;font-weight:bold;margin-top:10px;display:block">Upload Photos & Videos:</label>
-<input type="file" id="mediaUpload" multiple accept="image/*,video/*" onchange="previewMedia(event)">
-<div class="preview" id="preview"></div>
+ let posts = JSON.parse(localStorage.getItem('nepPosts') || '[]');
+ posts.unshift(newPost);
+ localStorage.setItem('nepPosts', JSON.stringify(posts));
 
-<button class="btn">Post Now</button>
-</div>
+ document.getElementById('status').innerText = "✅ SUCCESS! Post Saved!";
+ alert("✅ SUCCESS! Your post is saved!\n\n" + title + " - " + area);
 
-<div class="card">
-<h3>💳 Payment Details - Seller</h3>
-<input id="upiId" placeholder="Enter UPI ID e.g. neplink@okaxis" oninput="genQR()">
-<input placeholder="Account holder name">
-<div class="qr-box">
-<p style="font-size:13px">QR Code (Auto generates)</p>
-<img id="qrImg" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=neplink" alt="QR will appear here">
-<p id="upiText" style="font-size:12px;margin-top:6px;color:#666">Enter UPI to generate QR</p>
-</div>
-<p style="font-size:12px;color:#666">Buyer will scan QR to pay. Delivery charge discussed at time of buying/selling.</p>
-</div>
+ // Clear form
+ document.getElementById('title').value = "";
+ document.getElementById('desc').value = "";
+ document.getElementById('price').value = "";
+ // keep area and upi for next post
 
-<div class="card">
-<h3>📦 Quick Order</h3>
-<textarea placeholder="What do you want to order?"></textarea>
-<input id="orderLoc" placeholder="Delivery Location">
-<button class="btn btn2" onclick="getLocation('orderLoc')">📍 Pin Delivery Location</button>
-<input placeholder="Phone number">
-<button class="btn">Place Order on WhatsApp</button>
-</div>
-
-</div>
-<script>
-function getLocation(inputId){
- if(navigator.geolocation){
-  navigator.geolocation.getCurrentPosition(pos=>{
-   const link=`https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
-   document.getElementById(inputId).value=link;
-   alert("Location pinned: "+link);
-  });
- } else { alert("Geolocation not supported"); }
+ renderPosts();
 }
-function genQR(){
- const upi=document.getElementById('upiId').value;
- if(upi){
-  document.getElementById('qrImg').src=`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent('upi://pay?pa='+upi)}`;
-  document.getElementById('upiText').innerText=upi;
+
+function renderPosts(){
+ let posts = JSON.parse(localStorage.getItem('nepPosts') || '[]');
+ const list = document.getElementById('postsList');
+ if(posts.length==0){ list.innerHTML="No posts yet."; return; }
+ list.innerHTML = posts.map(p=>`
+   <div class="postItem">
+     <b>${p.title}</b> - ${p.area} - ₹${p.price}<br>
+     <small>${p.desc}</small><br>
+     <small>📍 <a href="${p.maplink}" target="_blank">View Map</a> | UPI: ${p.upi} | ${p.time}</small>
+   </div>
+ `).join('');
+}
+
+function clearPosts(){
+ if(confirm("Delete all posts?")){
+   localStorage.removeItem('nepPosts');
+   renderPosts();
  }
 }
-function previewMedia(e){
- const preview=document.getElementById('preview');
- preview.innerHTML='';
- [...e.target.files].forEach(file=>{
-  const url=URL.createObjectURL(file);
-  if(file.type.startsWith('image')) preview.innerHTML+=`<img src="${url}">`;
-  else preview.innerHTML+=`<video src="${url}" controls></video>`;
- });
-}
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js')}
-</script>
-</body>
-</html><!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>NEP Link - North East People Platform</title>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#1a73e8">
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
-body{background:#f5f7fb;color:#222}
-header{background:#1a73e8;color:#fff;padding:16px;text-align:center;position:sticky;top:0;z-index:10}
-.container{max-width:900px;margin:0 auto;padding:16px}
-.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-.btn{background:#1a73e8;color:#fff;border:0;padding:12px 18px;border-radius:8px;width:100%;font-size:15px;font-weight:bold;cursor:pointer;margin-top:8px}
-.btn2{background:#e8f0fe;color:#1a73e8}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:600px){.grid{grid-template-columns:1fr}}
-input,select,textarea{width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin:6px 0}
-.qr-box{text-align:center;border:1px dashed #1a73e8;padding:12px;border-radius:8px;margin:10px 0}
-.preview img,.preview video{width:80px;height:80px;object-fit:cover;border-radius:8px;margin:4px}
-</style>
-</head>
-<body>
-<header>
-<h1>NEP LINK</h1>
-<p>North East People Platform - Delhi NCR</p>
-</header>
-<div class="container">
 
-<div class="card">
-<h2>Find Rooms, Shops & Food</h2>
-<p style="margin-top:6px">Platform for North-East people in Delhi NCR. Delivery charge will be discussed at the time of buying and selling.</p>
-</div>
-
-<div class="grid">
-<div class="card">
-<h3>🏠 Room Rentals</h3>
-<select>
-<option>Select Location</option><option>Munirka</option><option>Humayunpur</option><option>Marani Bagh</option><option>Ashram</option><option>Kotla</option><option>Molarband</option><option>Gurugram</option>
-</select>
-<input id="roomLoc" placeholder="Exact address / Pin Location">
-<button class="btn btn2" onclick="getLocation('roomLoc')">📍 Use My Current Location</button>
-<button class="btn">Search Rooms</button>
-</div>
-
-<div class="card">
-<h3>🛒 North East Shops</h3>
-<select><option>All Items</option><option>Axone</option><option>Smoked Meat</option><option>Dry Fish</option></select>
-<input id="shopLoc" placeholder="Shop Location">
-<button class="btn btn2" onclick="getLocation('shopLoc')">📍 Pin Shop Location</button>
-<button class="btn">Browse Shops</button>
-</div>
-</div>
-
-<div class="card">
-<h3>📦 Post Your Product / Room (Upload Photos & Videos)</h3>
-<input id="title" placeholder="Title e.g. 1BHK available Marani Bagh">
-<textarea placeholder="Description, price..."></textarea>
-<select><option>Marani Bagh</option><option>Ashram</option><option>Kotla</option><option>Munirka</option><option>Gurugram</option><option>Other</option></select>
-<input id="pinInput" placeholder="Paste Google Maps Link or Pin Location">
-<button class="btn btn2" onclick="getLocation('pinInput')">📍 Get GPS Pin</button>
-
-<label style="font-size:14px;font-weight:bold;margin-top:10px;display:block">Upload Photos & Videos:</label>
-<input type="file" id="mediaUpload" multiple accept="image/*,video/*" onchange="previewMedia(event)">
-<div class="preview" id="preview"></div>
-
-<button class="btn">Post Now</button>
-</div>
-
-<div class="card">
-<h3>💳 Payment Details - Seller</h3>
-<input id="upiId" placeholder="Enter UPI ID e.g. neplink@okaxis" oninput="genQR()">
-<input placeholder="Account holder name">
-<div class="qr-box">
-<p style="font-size:13px">QR Code (Auto generates)</p>
-<img id="qrImg" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=neplink" alt="QR will appear here">
-<p id="upiText" style="font-size:12px;margin-top:6px;color:#666">Enter UPI to generate QR</p>
-</div>
-<p style="font-size:12px;color:#666">Buyer will scan QR to pay. Delivery charge discussed at time of buying/selling.</p>
-</div>
-
-<div class="card">
-<h3>📦 Quick Order</h3>
-<textarea placeholder="What do you want to order?"></textarea>
-<input id="orderLoc" placeholder="Delivery Location">
-<button class="btn btn2" onclick="getLocation('orderLoc')">📍 Pin Delivery Location</button>
-<input placeholder="Phone number">
-<button class="btn">Place Order on WhatsApp</button>
-</div>
-
-</div>
-<script>
-function getLocation(inputId){
- if(navigator.geolocation){
-  navigator.geolocation.getCurrentPosition(pos=>{
-   const link=`https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
-   document.getElementById(inputId).value=link;
-   alert("Location pinned: "+link);
-  });
- } else { alert("Geolocation not supported"); }
-}
-function genQR(){
- const upi=document.getElementById('upiId').value;
- if(upi){
-  document.getElementById('qrImg').src=`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent('upi://pay?pa='+upi)}`;
-  document.getElementById('upiText').innerText=upi;
- }
-}
-function previewMedia(e){
- const preview=document.getElementById('preview');
- preview.innerHTML='';
- [...e.target.files].forEach(file=>{
-  const url=URL.createObjectURL(file);
-  if(file.type.startsWith('image')) preview.innerHTML+=`<img src="${url}">`;
-  else preview.innerHTML+=`<video src="${url}" controls></video>`;
- });
-}
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js')}
-</script>
-</body>
-</html><!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>NEP Link - North East People Platform</title>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#1a73e8">
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
-body{background:#f5f7fb;color:#222}
-header{background:#1a73e8;color:#fff;padding:16px;text-align:center;position:sticky;top:0;z-index:10}
-.container{max-width:900px;margin:0 auto;padding:16px}
-.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-.btn{background:#1a73e8;color:#fff;border:0;padding:12px 18px;border-radius:8px;width:100%;font-size:15px;font-weight:bold;cursor:pointer;margin-top:8px}
-.btn2{background:#e8f0fe;color:#1a73e8}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:600px){.grid{grid-template-columns:1fr}}
-input,select,textarea{width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin:6px 0}
-.qr-box{text-align:center;border:1px dashed #1a73e8;padding:12px;border-radius:8px;margin:10px 0}
-.preview img,.preview video{width:80px;height:80px;object-fit:cover;border-radius:8px;margin:4px}
-</style>
-</head>
-<body>
-<header>
-<h1>NEP LINK</h1>
-<p>North East People Platform - Delhi NCR</p>
-</header>
-<div class="container">
-
-<div class="card">
-<h2>Find Rooms, Shops & Food</h2>
-<p style="margin-top:6px">Platform for North-East people in Delhi NCR. Delivery charge will be discussed at the time of buying and selling.</p>
-</div>
-
-<div class="grid">
-<div class="card">
-<h3>🏠 Room Rentals</h3>
-<select>
-<option>Select Location</option><option>Munirka</option><option>Humayunpur</option><option>Marani Bagh</option><option>Ashram</option><option>Kotla</option><option>Molarband</option><option>Gurugram</option>
-</select>
-<input id="roomLoc" placeholder="Exact address / Pin Location">
-<button class="btn btn2" onclick="getLocation('roomLoc')">📍 Use My Current Location</button>
-<button class="btn">Search Rooms</button>
-</div>
-
-<div class="card">
-<h3>🛒 North East Shops</h3>
-<select><option>All Items</option><option>Axone</option><option>Smoked Meat</option><option>Dry Fish</option></select>
-<input id="shopLoc" placeholder="Shop Location">
-<button class="btn btn2" onclick="getLocation('shopLoc')">📍 Pin Shop Location</button>
-<button class="btn">Browse Shops</button>
-</div>
-</div>
-
-<div class="card">
-<h3>📦 Post Your Product / Room (Upload Photos & Videos)</h3>
-<input id="title" placeholder="Title e.g. 1BHK available Marani Bagh">
-<textarea placeholder="Description, price..."></textarea>
-<select><option>Marani Bagh</option><option>Ashram</option><option>Kotla</option><option>Munirka</option><option>Gurugram</option><option>Other</option></select>
-<input id="pinInput" placeholder="Paste Google Maps Link or Pin Location">
-<button class="btn btn2" onclick="getLocation('pinInput')">📍 Get GPS Pin</button>
-
-<label style="font-size:14px;font-weight:bold;margin-top:10px;display:block">Upload Photos & Videos:</label>
-<input type="file" id="mediaUpload" multiple accept="image/*,video/*" onchange="previewMedia(event)">
-<div class="preview" id="preview"></div>
-
-<button class="btn">Post Now</button>
-</div>
-
-<div class="card">
-<h3>💳 Payment Details - Seller</h3>
-<input id="upiId" placeholder="Enter UPI ID e.g. neplink@okaxis" oninput="genQR()">
-<input placeholder="Account holder name">
-<div class="qr-box">
-<p style="font-size:13px">QR Code (Auto generates)</p>
-<img id="qrImg" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=neplink" alt="QR will appear here">
-<p id="upiText" style="font-size:12px;margin-top:6px;color:#666">Enter UPI to generate QR</p>
-</div>
-<p style="font-size:12px;color:#666">Buyer will scan QR to pay. Delivery charge discussed at time of buying/selling.</p>
-</div>
-
-<div class="card">
-<h3>📦 Quick Order</h3>
-<textarea placeholder="What do you want to order?"></textarea>
-<input id="orderLoc" placeholder="Delivery Location">
-<button class="btn btn2" onclick="getLocation('orderLoc')">📍 Pin Delivery Location</button>
-<input placeholder="Phone number">
-<button class="btn">Place Order on WhatsApp</button>
-</div>
-
-</div>
-<script>
-function getLocation(inputId){
- if(navigator.geolocation){
-  navigator.geolocation.getCurrentPosition(pos=>{
-   const link=`https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
-   document.getElementById(inputId).value=link;
-   alert("Location pinned: "+link);
-  });
- } else { alert("Geolocation not supported"); }
-}
-function genQR(){
- const upi=document.getElementById('upiId').value;
- if(upi){
-  document.getElementById('qrImg').src=`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent('upi://pay?pa='+upi)}`;
-  document.getElementById('upiText').innerText=upi;
- }
-}
-function previewMedia(e){
- const preview=document.getElementById('preview');
- preview.innerHTML='';
- [...e.target.files].forEach(file=>{
-  const url=URL.createObjectURL(file);
-  if(file.type.startsWith('image')) preview.innerHTML+=`<img src="${url}">`;
-  else preview.innerHTML+=`<video src="${url}" controls></video>`;
- });
-}
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js')}
+renderPosts();
 </script>
 </body>
 </html>
