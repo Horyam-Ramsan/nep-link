@@ -18,147 +18,120 @@ header{background:#1a73e8;color:#fff;padding:16px;text-align:center;position:sti
 @media(max-width:600px){.grid{grid-template-columns:1fr}}
 input,select,textarea{width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin:6px 0}
 label{font-weight:bold;font-size:13px}
-#postsList{margin-top:16px}
 .postItem{border:1px solid #eee;padding:12px;border-radius:8px;margin-bottom:10px;background:#fafbff}
 </style>
 </head>
 <body>
 <header>
-<h2>NEP Link</h2>
-<p>North East People Platform</p>
+<h2>NEP Link - PUBLIC</h2>
+<p>Everyone can see your posts now!</p>
 </header>
 
 <div class="container">
 <div class="card">
 <h3>🏠 Post Your Room / Product</h3>
-
 <label>Title (e.g. 1RK)</label>
 <input id="title" placeholder="e.g. 1RK Room for Rent">
-
-<label>Description (e.g. Govt meter)</label>
-<textarea id="desc" placeholder="e.g. Govt meter, water 24x7, 1st floor"></textarea>
-
+<label>Description</label>
+<textarea id="desc" placeholder="Govt meter, water 24x7"></textarea>
 <div class="grid">
-<div>
-<label>Area / Location (e.g. Marani Bagh)</label>
-<input id="area" placeholder="e.g. Marani Bagh">
+<div><label>Area</label><input id="area" placeholder="Marani Bagh"></div>
+<div><label>Rent / Price</label><input id="price" placeholder="6000/month"></div>
 </div>
-<div>
-<label>Rent / Price</label>
-<input id="price" placeholder="e.g. 6000/month">
-</div>
-</div>
-
 <label>Google Maps Link</label>
 <input id="maplink" placeholder="Paste Google Maps link">
-
 <button class="btn btn2" type="button" onclick="getGPS()">📍 Get GPS Pin</button>
 <p id="gpsText" style="font-size:12px;color:green;margin:6px 0"></p>
-
-<label>Upload Photos & Videos</label>
-<input type="file" id="photos" multiple accept="image/*,video/*">
-
-<div style="margin-top:12px;border-top:1px dashed #ddd;padding-top:12px">
-<h4>Payment Details - Seller</h4>
 <label>UPI ID (Required)</label>
-<input id="upi" placeholder="e.g. yourname@okaxis">
-<label>Phone Number</label>
-<input id="phone" placeholder="e.g. 9876543210">
-</div>
-
+<input id="upi" placeholder="yourname@okaxis">
+<label>Phone</label>
+<input id="phone" placeholder="9876543210">
 <br>
-<button class="btn" id="postBtn" type="button" onclick="handlePostNow()">Post Now</button>
-<p id="status" style="text-align:center;margin-top:10px;color:green;font-weight:bold"></p>
+<button class="btn" id="postBtn" type="button">Post Now For Everyone</button>
+<p id="status" style="text-align:center;margin-top:10px;font-weight:bold"></p>
 </div>
 
 <div class="card">
-<h3>📋 Your Recent Posts (Saved in this phone)</h3>
-<div id="postsList">No posts yet.</div>
-<button class="btn btn2" onclick="clearPosts()">Clear All Posts</button>
+<h3>🌍 LIVE Posts From All Users</h3>
+<div id="postsList">Loading...</div>
+</div>
 </div>
 
-</div>
+<script type="module">
+// ===== PASTE YOUR FIREBASE CONFIG HERE - REPLACE THIS WHOLE OBJECT =====
+const firebaseConfig = {
+  apiKey: "REPLACE_WITH_YOUR_API_KEY",
+  authDomain: "REPLACE_WITH_YOUR_PROJECT.firebaseapp.com",
+  projectId: "REPLACE_WITH_YOUR_PROJECT_ID",
+  storageBucket: "REPLACE_WITH_YOUR_PROJECT.appspot.com",
+  messagingSenderId: "REPLACE_WITH_YOUR_SENDER_ID",
+  appId: "REPLACE_WITH_YOUR_APP_ID"
+};
+// ===== END CONFIG =====
 
-<script>
-// Register Service Worker for PWA
-if('serviceWorker' in navigator){
- navigator.serviceWorker.register('sw.js');
-}
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// GPS Function
-function getGPS(){
- const t = document.getElementById('gpsText');
- t.innerText = "Getting location...";
- if(!navigator.geolocation){ t.innerText="GPS not supported"; return; }
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+window.getGPS = function(){
+ const t=document.getElementById('gpsText');
+ t.innerText="Getting location...";
  navigator.geolocation.getCurrentPosition(pos=>{
-   const lat = pos.coords.latitude;
-   const lon = pos.coords.longitude;
-   document.getElementById('maplink').value = `https://maps.google.com/?q=${lat},${lon}`;
-   t.innerText = `✅ GPS Got: ${lat.toFixed(5)}, ${lon.toFixed(5)}`;
- }, err=>{
-   t.innerText = "❌ GPS Failed: " + err.message;
- });
+   const lat=pos.coords.latitude, lon=pos.coords.longitude;
+   document.getElementById('maplink').value=`https://maps.google.com/?q=${lat},${lon}`;
+   t.innerText=`✅ GPS: ${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+ }, err=>{ t.innerText="❌ GPS Failed: "+err.message; });
 }
 
-// MAIN POST NOW - FIXED
-function handlePostNow(){
- const title = document.getElementById('title').value.trim();
- const desc = document.getElementById('desc').value.trim();
- const area = document.getElementById('area').value.trim();
- const price = document.getElementById('price').value.trim();
- const maplink = document.getElementById('maplink').value.trim();
- const upi = document.getElementById('upi').value.trim();
- const phone = document.getElementById('phone').value.trim();
-
- if(!title){ alert("Please enter Title (e.g. 1RK)"); return; }
- if(!area){ alert("Please enter Area"); return; }
- if(!upi){ alert("Please enter UPI ID - Required for Payment"); return; }
-
- document.getElementById('status').innerText = "⏳ Posting...";
-
- const newPost = {
-   id: Date.now(),
-   title, desc, area, price, maplink, upi, phone,
-   time: new Date().toLocaleString()
- };
-
- let posts = JSON.parse(localStorage.getItem('nepPosts') || '[]');
- posts.unshift(newPost);
- localStorage.setItem('nepPosts', JSON.stringify(posts));
-
- document.getElementById('status').innerText = "✅ SUCCESS! Post Saved!";
- alert("✅ SUCCESS! Your post is saved!\n\n" + title + " - " + area);
-
- // Clear form
- document.getElementById('title').value = "";
- document.getElementById('desc').value = "";
- document.getElementById('price').value = "";
- // keep area and upi for next post
-
- renderPosts();
+async function loadPosts(){
+ const list=document.getElementById('postsList');
+ try{
+   const q=query(collection(db,"posts"), orderBy("createdAt","desc"));
+   const snap=await getDocs(q);
+   if(snap.empty){ list.innerHTML="No posts yet. Be first to post!"; return; }
+   list.innerHTML="";
+   snap.forEach(doc=>{
+     const p=doc.data();
+     list.innerHTML+=`<div class="postItem"><b>${p.title}</b> - ${p.area} - ₹${p.price}<br><small>${p.desc}</small><br><small>📍 <a href="${p.maplink}" target="_blank">Map</a> | UPI:${p.upi} | Phone:${p.phone}<br>${p.time||''}</small></div>`;
+   });
+ }catch(e){ list.innerHTML="Error loading: "+e.message+"<br>Check Firestore Rules - set to Test Mode"; }
 }
+loadPosts();
 
-function renderPosts(){
- let posts = JSON.parse(localStorage.getItem('nepPosts') || '[]');
- const list = document.getElementById('postsList');
- if(posts.length==0){ list.innerHTML="No posts yet."; return; }
- list.innerHTML = posts.map(p=>`
-   <div class="postItem">
-     <b>${p.title}</b> - ${p.area} - ₹${p.price}<br>
-     <small>${p.desc}</small><br>
-     <small>📍 <a href="${p.maplink}" target="_blank">View Map</a> | UPI: ${p.upi} | ${p.time}</small>
-   </div>
- `).join('');
-}
+document.getElementById('postBtn').onclick = async ()=>{
+ const title=document.getElementById('title').value.trim();
+ const desc=document.getElementById('desc').value.trim();
+ const area=document.getElementById('area').value.trim();
+ const price=document.getElementById('price').value.trim();
+ const maplink=document.getElementById('maplink').value.trim();
+ const upi=document.getElementById('upi').value.trim();
+ const phone=document.getElementById('phone').value.trim();
+ const status=document.getElementById('status');
 
-function clearPosts(){
- if(confirm("Delete all posts?")){
-   localStorage.removeItem('nepPosts');
-   renderPosts();
+ if(!title){ alert("Enter Title"); return; }
+ if(!area){ alert("Enter Area"); return; }
+ if(!upi){ alert("Enter UPI"); return; }
+
+ status.style.color="orange";
+ status.innerText="⏳ Posting to Everyone...";
+ try{
+   await addDoc(collection(db,"posts"), {title,desc,area,price,maplink,upi,phone,time:new Date().toLocaleString(), createdAt: serverTimestamp()});
+   status.style.color="green";
+   status.innerText="✅ POSTED! Everyone can see now!";
+   alert("✅ SUCCESS! Now EVERYONE can see your post!");
+   document.getElementById('title').value="";
+   document.getElementById('desc').value="";
+   loadPosts();
+ }catch(e){
+   status.style.color="red";
+   status.innerText="❌ Failed: "+e.message;
+   alert("Failed: "+e.message+"\n\nMake sure Firestore is in TEST MODE");
  }
-}
+};
 
-renderPosts();
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js'); }
 </script>
 </body>
 </html>
