@@ -8,71 +8,86 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <style>
-body { background: linear-gradient(135deg, #0f766e, #0e7490); min-height: 100vh; }
+  body {
+    background: linear-gradient(135deg, #0f766e, #0e7490);
+    min-height: 100vh;
+    font-family: sans-serif;
+  }
 </style>
 </head>
 <body class="p-4">
-<div class="max-w-xl mx-auto">
-  <h1 class="text-center text-white font-bold text-xl mb-1">NEP LINK & Houses</h1>
-  <p class="text-center text-white/80 text-xs mb-4">Find Flats, Houses, PGs</p>
 
-  <!-- ADD FORM -->
+<div class="max-w-xl mx-auto">
+  <!-- HEADER -->
+  <h1 class="text-center text-white font-bold text-xl mb-1">
+    🏠 NEP LINK & Houses 🛒
+  </h1>
+  <p class="text-center text-white/80 text-xs mb-4">
+    Find Flats, Houses, PGs & Shops
+  </p>
+
+  <!-- ADD LISTING FORM -->
   <div class="bg-white rounded-xl p-5 shadow-lg mb-5">
-    <h2 class="font-bold text-sm mb-3">Add Your Listing</h2>
+    <h2 class="font-bold text-sm mb-3">🏠 Add Your Listing 🛒</h2>
+
     <select id="type" class="w-full border rounded p-2 text-sm mb-2">
-      <option>Flat / Apartment - Looking for Rent / Flatmate</option>
-      <option>House - For Rent</option>
-      <option>PG - Available</option>
-      <option>Shop - For Rent</option>
+      <option>🏠 Flat / Apartment - Looking for Rent / Flatmate</option>
+      <option>🏠 House - For Rent</option>
+      <option>🛏️ PG - Available</option>
+      <option>🛒 Shop - For Rent</option>
     </select>
+
     <input id="name" placeholder="Your Name" class="w-full border rounded p-2 text-sm mb-2">
     <input id="phone" placeholder="Phone Number (Owner ID)" class="w-full border rounded p-2 text-sm mb-2">
     <input id="location" placeholder="Location e.g. Jebel Ali, Dubai" class="w-full border rounded p-2 text-sm mb-2">
     <input id="price" placeholder="Price e.g. 2000 AED / month" class="w-full border rounded p-2 text-sm mb-2">
+
     <textarea id="desc" placeholder="Description" class="w-full border rounded p-2 text-sm mb-3 h-20"></textarea>
-    <button onclick="addListing()" class="w-full bg-teal-700 text-white rounded py-2 text-sm font-bold">Publish Listing +</button>
+
+    <button onclick="addListing()" class="w-full bg-teal-700 text-white rounded py-2 text-sm font-bold">
+      Publish Listing +
+    </button>
+
     <p id="status" class="text-xs text-center mt-2 text-gray-500"></p>
   </div>
 
-  <!-- FILTERS -->
-  <div class="flex gap-2 justify-center mb-4 text-[11px]">
-    <button onclick="filterList('all')" class="bg-white px-3 py-1 rounded-full">All</button>
-    <button onclick="filterList('Flat')" class="bg-white/70 px-3 py-1 rounded-full">Flats</button>
-    <button onclick="filterList('House')" class="bg-white/70 px-3 py-1 rounded-full">Houses</button>
-    <button onclick="filterList('PG')" class="bg-white/70 px-3 py-1 rounded-full">PG</button>
-    <button onclick="filterList('Shop')" class="bg-white/70 px-3 py-1 rounded-full">Shops</button>
+  <!-- FILTER BUTTONS -->
+  <div class="flex gap-2 justify-center mb-4 text-[11px] flex-wrap">
+    <button onclick="filterList('all')" class="bg-white px-3 py-1 rounded-full shadow">All</button>
+    <button onclick="filterList('Flat')" class="bg-white/70 px-3 py-1 rounded-full">🏠 Flats</button>
+    <button onclick="filterList('House')" class="bg-white/70 px-3 py-1 rounded-full">🏠 Houses</button>
+    <button onclick="filterList('PG')" class="bg-white/70 px-3 py-1 rounded-full">🛏️ PG</button>
+    <button onclick="filterList('Shop')" class="bg-white/70 px-3 py-1 rounded-full">🛒 Shops</button>
   </div>
 
-  <!-- LISTINGS -->
+  <!-- LISTINGS SECTION -->
   <div class="bg-white rounded-xl p-4 shadow-lg">
-    <h2 class="font-bold text-sm mb-3">Latest Listings</h2>
-    <div id="listings" class="space-y-3 text-sm">Loading...</div>
+    <h2 class="font-bold text-sm mb-3">🏠 Latest Listings 🛒</h2>
+    <div id="listings" class="space-y-3 text-sm">
+      Loading...
+    </div>
   </div>
 
-  <p class="text-center text-white/70 text-[10px] mt-6">NEP LINK & Houses<br>Trusted Platform for Nepalese in Dubai</p>
+  <p class="text-center text-white/70 text-[10px] mt-6">
+    NEP LINK & Houses<br>
+    Trusted Platform for Nepalese in Dubai
+  </p>
 </div>
 
 <script>
-  // Firebase Config - Replace with your own if needed
+  // Firebase Config - Your Real Config
   const firebaseConfig = {
-    apiKey: "AIzaSyDummy-Replace-With-Yours",
-    authDomain: "nep-link.firebaseapp.com",
-    projectId: "nep-link",
-    storageBucket: "nep-link.appspot.com",
-    messagingSenderId: "123456789",
-    appId: "1:123456789:web:abcdef"
+    apiKey: "AIzaSyDdcMCz5GfUPIz18QEa_xo3bPT4LX0Ze6I",
+    authDomain: "nep-link-9b254.firebaseapp.com",
+    projectId: "nep-link-9b254",
+    storageBucket: "nep-link-9b254.firebasestorage.app",
+    messagingSenderId: "1070476104406",
+    appId: "1:1070476104406:web:b99d58cd9e1140cc39ef77"
   };
 
-  // Try to init, if fails use localStorage
-  let db = null;
-  let useFirebase = false;
-  try {
-    if(firebaseConfig.apiKey.includes("Dummy")==false){
-      firebase.initializeApp(firebaseConfig);
-      db = firebase.firestore();
-      useFirebase = true;
-    }
-  } catch(e){ useFirebase = false; }
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
 
   let allData = [];
   let currentFilter = 'all';
@@ -87,53 +102,55 @@ body { background: linear-gradient(135deg, #0f766e, #0e7490); min-height: 100vh;
       desc: document.getElementById('desc').value,
       time: Date.now()
     };
-    if(!data.name ||!data.phone ||!data.location){ alert('Please fill Name, Phone, Location'); return; }
 
-    if(useFirebase){
-      db.collection("listings").add(data).then(()=>{
-        document.getElementById('status').innerText='Published!';
-        clearForm(); loadListings();
-      }).catch(e=>alert(e.message));
-    } else {
-      let local = JSON.parse(localStorage.getItem('nep_listings')||'[]');
-      data.id = Date.now().toString();
-      local.unshift(data);
-      localStorage.setItem('nep_listings', JSON.stringify(local));
-      document.getElementById('status').innerText='Published locally!';
-      clearForm(); loadListings();
+    if(!data.name ||!data.phone ||!data.location){
+      alert('Please fill Name, Phone, Location');
+      return;
     }
-  }
 
-  function clearForm(){
-    document.getElementById('name').value='';
-    document.getElementById('phone').value='';
-    document.getElementById('location').value='';
-    document.getElementById('price').value='';
-    document.getElementById('desc').value='';
+    db.collection("listings").add(data).then(()=>{
+      document.getElementById('status').innerText = 'Published!';
+      document.getElementById('name').value = '';
+      document.getElementById('phone').value = '';
+      document.getElementById('location').value = '';
+      document.getElementById('price').value = '';
+      document.getElementById('desc').value = '';
+      loadListings();
+    });
   }
 
   function loadListings(){
-    if(useFirebase){
-      db.collection("listings").orderBy("time","desc").get().then(snap=>{
-        allData = []; snap.forEach(doc=>{ let d=doc.data(); d.id=doc.id; allData.push(d); });
-        renderList();
+    db.collection("listings").orderBy("time","desc").get().then(snap=>{
+      allData = [];
+      snap.forEach(doc=>{
+        let d = doc.data();
+        d.id = doc.id;
+        allData.push(d);
       });
-    } else {
-      allData = JSON.parse(localStorage.getItem('nep_listings')||'[]');
       renderList();
-    }
+    });
   }
 
   function renderList(){
     const div = document.getElementById('listings');
     let filtered = allData;
-    if(currentFilter!='all'){ filtered = allData.filter(x=>x.type.includes(currentFilter)); }
-    if(filtered.length==0){ div.innerHTML='<p class="text-gray-400">No listings yet</p>'; return; }
+
+    if(currentFilter!= 'all'){
+      filtered = allData.filter(x=>x.type.includes(currentFilter));
+    }
+
+    if(filtered.length == 0){
+      div.innerHTML = '<p class="text-gray-400">No listings yet</p>';
+      return;
+    }
 
     div.innerHTML = filtered.map(item=>`
-      <div class="border rounded-lg p-3">
-        <div class="flex justify-between"><b>${item.type}</b><span class="text-xs text-gray-500">${item.price}</span></div>
-        <p class="text-xs text-gray-600">${item.location} | ${item.name}</p>
+      <div class="border rounded-lg p-3 bg-gray-50">
+        <div class="flex justify-between">
+          <b>${item.type}</b>
+          <span class="text-xs text-gray-500">${item.price}</span>
+        </div>
+        <p class="text-xs text-gray-600 mt-1">${item.location} | ${item.name}</p>
         <p class="text-xs mt-1">${item.desc}</p>
         <p class="text-xs mt-1">📞 ${item.phone}</p>
         <div class="flex gap-2 mt-2">
@@ -144,44 +161,38 @@ body { background: linear-gradient(135deg, #0f766e, #0e7490); min-height: 100vh;
     `).join('');
   }
 
-  function filterList(f){ currentFilter=f; renderList(); }
+  function filterList(f){
+    currentFilter = f;
+    renderList();
+  }
 
   function deleteListing(id, ownerPhone){
-    let entered = prompt("Enter your phone number to delete (must match listing phone):");
-    if(!entered || entered.trim()!== ownerPhone.trim()){ alert("Phone number does not match owner. You cannot delete."); return; }
-    if(!confirm("Delete this listing?")) return;
-
-    if(useFirebase){
-      db.collection("listings").doc(id).delete().then(()=>loadListings());
-    } else {
-      let local = JSON.parse(localStorage.getItem('nep_listings')||'[]');
-      local = local.filter(x=>x.id!=id);
-      localStorage.setItem('nep_listings', JSON.stringify(local));
-      loadListings();
+    let entered = prompt("Enter your phone number to delete:");
+    if(!entered || entered.trim()!== ownerPhone.trim()){
+      alert("Phone does not match owner!");
+      return;
     }
+    if(!confirm("Delete this listing?")) return;
+    db.collection("listings").doc(id).delete().then(()=>loadListings());
   }
 
   function editListing(id){
     let item = allData.find(x=>x.id==id);
-    let entered = prompt("Enter your phone number to edit (must match listing phone):");
-    if(!entered || entered.trim()!== item.phone.trim()){ alert("Phone number does not match owner. You cannot edit."); return; }
-
-    let newDesc = prompt("Edit Description:", item.desc);
-    if(newDesc===null) return;
-    let newPrice = prompt("Edit Price:", item.price);
-    if(newPrice===null) return;
-
-    if(useFirebase){
-      db.collection("listings").doc(id).update({desc:newDesc, price:newPrice}).then(()=>loadListings());
-    } else {
-      let local = JSON.parse(localStorage.getItem('nep_listings')||'[]');
-      let idx = local.findIndex(x=>x.id==id);
-      if(idx>-1){ local[idx].desc=newDesc; local[idx].price=newPrice; localStorage.setItem('nep_listings', JSON.stringify(local)); }
-      loadListings();
+    let entered = prompt("Enter your phone to edit:");
+    if(!entered || entered.trim()!== item.phone.trim()){
+      alert("Phone does not match!");
+      return;
     }
+    let newDesc = prompt("Edit Description:", item.desc);
+    if(newDesc === null) return;
+    let newPrice = prompt("Edit Price:", item.price);
+    if(newPrice === null) return;
+    db.collection("listings").doc(id).update({desc:newDesc, price:newPrice}).then(()=>loadListings());
   }
 
+  // Load on start
   loadListings();
 </script>
+
 </body>
 </html>
